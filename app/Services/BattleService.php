@@ -11,6 +11,59 @@ use App\Models\Character;
 class BattleService
 {
 
+
+    /**
+     * The main method to trigger a new game.
+     */
+    public function play()
+    {
+        // Load the base characters from the DB
+        $kratosModel = Character::where('name', 'Kratos')->first();
+        $monsterModel = Character::where('name', 'Wild Monster')->first();
+
+        // Initialize with random stats within their ranges
+        $kratos = $this->initializeStats($kratosModel);
+        $monster = $this->initializeStats($monsterModel);
+
+        //  Create the Battle record
+        $battle = Battle::create(['total_rounds' => 0, 'winner' => null]);
+
+        // Save initial stats to battle_participants table
+        $this->saveParticipant($battle->id, $kratosModel, $kratos);
+        $this->saveParticipant($battle->id, $monsterModel, $monster);
+
+        // Determine who attacks first
+        $attacker = $this->determineFirstAttacker($kratos, $monster);
+        $defender = ($attacker['name'] === 'Kratos') ? $monster : $kratos;
+
+        // The Battle Loop (Max 15 rounds) [
+        for ($round = 1; $round <= 15; $round++) {
+            $this->executeTurn($battle->id, $round, $attacker, $defender);
+
+            // Check for Game Over
+            if ($defender['remaining_health'] <= 0) {
+                break;
+            }
+
+            // Switch roles for the next turn [cite: 30, 31]
+            $temp = $attacker;
+            $attacker = $defender;
+            $defender = $temp;
+        }
+
+        //  Declare Winner and update battle
+        $winner = $kratos['remaining_health'] > 0 && $monster['remaining_health'] <= 0 ? 'Kratos'
+            : ($monster['remaining_health'] > 0 && $kratos['remaining_health'] <= 0 ? 'Wild Monster' : 'Draw');
+
+        $battle->update([
+            'winner' => $winner,
+            'total_rounds' => min($round, 15)
+        ]);
+
+        // Return the full battle history for frontend
+        return Battle::with(['participants', 'rounds'])->find($battle->id);
+    }
+
     /**
      * Generate random stats for a character based on their min/max limits.
      */
