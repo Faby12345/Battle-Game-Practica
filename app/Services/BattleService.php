@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Battle;
+use App\Models\BattleRound;
 use App\Models\Character;
 
 /**
@@ -36,4 +37,22 @@ class BattleService
         // if the speed is the same for both we move on to luck
         return ($kratos['luck'] >= $monster['luck']) ? $kratos : $monster;
     }
+    /**
+     * Logs the details for the round
+    */
+    private function logRound($battleId, $round, $attacker, $defender, $damage, $skill, $message)
+    {
+        BattleRound::create([
+            'battle_id' => $battleId,
+            'round_number' => $round,
+            'attacker' => $attacker['name'],
+            'defender' => $defender['name'],
+            'damage' => $damage,
+            'defender_remaining_health' => $defender['remaining_health'],
+            'skill_used' => $skill,
+            'log_message' => $message
+        ]);
+    }
+
+
 }
