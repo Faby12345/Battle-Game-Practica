@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Battle;
+use App\Models\BattleParticipant;
 use App\Models\BattleRound;
 use App\Models\Character;
 
@@ -54,5 +55,23 @@ class BattleService
         ]);
     }
 
+    /**
+     * Helper to save participants.
+     */
+    private function saveParticipant($battleId, $model, $stats)
+    {
+        BattleParticipant::create([
+            'battle_id' => $battleId,
+            'character_id' => $model->id,
+            'name' => $stats['name'],
+            'type' => $stats['type'],
+            'initial_health' => $stats['health'],
+            'remaining_health' => $stats['remaining_health'],
+            'strength' => $stats['strength'],
+            'defence' => $stats['defence'],
+            'speed' => $stats['speed'],
+            'luck' => $stats['luck'],
+        ]);
+    }
 
 }
