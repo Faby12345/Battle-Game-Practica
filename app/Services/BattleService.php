@@ -73,5 +73,50 @@ class BattleService
             'luck' => $stats['luck'],
         ]);
     }
+    /**
+     * Executes a single turn, calculating damage, luck, and skills.
+     */
+    private function executeTurn($battleId, $round, &$attacker, &$defender)
+    {
+        $logMessage = "{$attacker['name']} attacks {$defender['name']}! ";
+        $skillUsed = null;
+
+        //  Check if defender gets lucky and dodges
+        if (rand(1, 100) <= $defender['luck']) {
+            $logMessage .= "{$defender['name']} got lucky and dodged the attack! No damage taken.";
+            $this->logRound($battleId, $round, $attacker, $defender, 0, null, $logMessage);
+            return; // Turn ends
+        }
+
+        // Base Damage Calculation
+        $damage = $attacker['strength'] - $defender['defence'];
+        if ($damage < 0) $damage = 0; // Prevent healing from negative damage
+
+
+        // Check Attacker Skills (Rapid Fire)
+        $attacksCount = 1;
+        if ($attacker['name'] === 'Kratos' && rand(1, 100) <= 15) {
+            $skillUsed = 'Rapid fire';
+            $attacksCount = 2;
+            $logMessage .= "Kratos used Rapid fire! Striking twice! ";
+        }
+
+        // 4. Check Defender Skills (Magic Armour)
+        if ($defender['name'] === 'Kratos' && rand(1, 100) <= 15) {
+            $skillUsed = $skillUsed ? $skillUsed . ' & Magic armour' : 'Magic armour';
+            $damage = (int)($damage / 2);
+            $logMessage .= "Kratos used Magic armour! Damage halved. ";
+        }
+
+        // Apply Damage
+        $totalDamage = $damage * $attacksCount;
+        $defender['remaining_health'] -= $totalDamage;
+        if ($defender['remaining_health'] < 0) $defender['remaining_health'] = 0;
+
+        $logMessage .= "Dealt {$totalDamage} damage.";
+
+        // Log the result
+        $this->logRound($battleId, $round, $attacker, $defender, $totalDamage, $skillUsed, $logMessage);
+    }
 
 }
