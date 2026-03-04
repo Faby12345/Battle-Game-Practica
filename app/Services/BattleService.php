@@ -1,9 +1,10 @@
 <?php
-
+namespace App\Services;
 use App\Models\Battle;
 use App\Models\BattleParticipant;
 use App\Models\BattleRound;
 use App\Models\Character;
+
 
 /**
  * The main method to trigger a new game.
