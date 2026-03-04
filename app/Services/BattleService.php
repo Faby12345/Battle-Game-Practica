@@ -25,4 +25,15 @@ class BattleService
             'luck' => rand($character->min_luck, $character->max_luck),
         ];
     }
+
+    /**
+     * Determines first attacker based on speed, falling back to luck.
+     */
+    private function determineFirstAttacker($kratos, $monster)
+    {
+        if ($kratos['speed'] > $monster['speed']) return $kratos;
+        if ($monster['speed'] > $kratos['speed']) return $monster;
+        // if the speed is the same for both we move on to luck
+        return ($kratos['luck'] >= $monster['luck']) ? $kratos : $monster;
+    }
 }
