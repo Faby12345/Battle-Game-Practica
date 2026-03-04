@@ -1,0 +1,28 @@
+<?php
+
+use App\Models\Battle;
+use App\Models\Character;
+
+/**
+ * The main method to trigger a new game.
+ */
+class BattleService
+{
+
+    /**
+     * Generate random stats for a character based on their min/max limits.
+     */
+    private function initializeStats($character)
+    {
+        return [
+            'name' => $character->name,
+            'type' => $character->type,
+            'health' => rand($character->min_health, $character->max_health),
+            'remaining_health' => rand($character->min_health, $character->max_health), // Starts full
+            'strength' => rand($character->min_strength, $character->max_strength),
+            'defence' => rand($character->min_defence, $character->max_defence),
+            'speed' => rand($character->min_speed, $character->max_speed),
+            'luck' => rand($character->min_luck, $character->max_luck),
+        ];
+    }
+}
