@@ -5,20 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\BattleService;
 use Illuminate\Http\JsonResponse;
+use App\Models\Battle;
 
 class BattleController extends Controller
 {
     private BattleService $battleService;
 
-    // Inject the BattleService using Laravel's dependency injection
     public function __construct(BattleService $battleService)
     {
         $this->battleService = $battleService;
     }
 
-    /**
-     * Trigger a new battle and return the results as JSON.
-     */
     public function play(): JsonResponse
     {
         try {
@@ -37,5 +34,15 @@ class BattleController extends Controller
         }
     }
 
+    public function index()
+    {
+        $battles = Battle::select('id', 'winner', 'total_rounds', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
+        return response()->json([
+            'status' => 'success',
+            'data' => $battles
+        ]);
+    }
 }

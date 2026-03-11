@@ -51,6 +51,14 @@ class BattleService
             $attacker = $defender;
             $defender = $temp;
         }
+        if ($kratos['name'] === $attacker['name']) {
+            $kratos = $attacker;
+            $monster = $defender;
+        } else {
+            $kratos = $defender;
+            $monster = $attacker;
+        }
+
 
         //  Declare Winner and update battle
         if ($kratos['remaining_health'] <= 0 && $monster['remaining_health'] <= 0) {
