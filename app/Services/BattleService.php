@@ -53,9 +53,15 @@ class BattleService
         }
 
         //  Declare Winner and update battle
-        $winner = $kratos['remaining_health'] > 0 && $monster['remaining_health'] <= 0 ? 'Kratos'
-            : ($monster['remaining_health'] > 0 && $kratos['remaining_health'] <= 0 ? 'Wild Monster' : 'Draw');
-
+        if ($kratos['remaining_health'] <= 0 && $monster['remaining_health'] <= 0) {
+            $winner = 'Draw';
+        } elseif ($kratos['remaining_health'] <= 0) {
+            $winner = 'Wild Monster';
+        } elseif ($monster['remaining_health'] <= 0) {
+            $winner = 'Kratos';
+        } else {
+            $winner = 'Draw';
+        }
         $battle->update([
             'winner' => $winner,
             'total_rounds' => min($round, 15)

@@ -36,4 +36,6 @@ class BattleController extends Controller
             ], 500);
         }
     }
+
+
 }
